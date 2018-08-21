@@ -59,13 +59,21 @@ const CHAR_CODE_3 = 163;
 
 const QUICK_SELECT_CHAR_CODE = [161, 8482, 163];
 const keys = {
-  controlC: 3,
+
+  controlC: 67,
   enter: 13
 };
 const RESET_CHAR_CODE = [...Object.values(keys), ...QUICK_SELECT_CHAR_CODE];
 
 let currUserInputData = "";
 let isStopped = false;
+
+function parseWindowKeycode() {
+    const key = window.event && window.event.keyCode || -1;
+    switch(key) {
+        case keys.controlC: 
+    }
+}
 
 function reset(stopped = false) {
   currUserInputData = "";
