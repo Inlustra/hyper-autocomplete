@@ -2,17 +2,27 @@
   "name": "hyper-autocomplete",
   "version": "1.0.0",
   "description": "",
+  "main": "dist/index.js",
   "keywords": [
     "hyper",
     "hyper.app",
     "hyper-plugin"
   ],
   "scripts": {
+    "start": "npx babel src --out-dir dist --watch --source-maps inline",
+    "build": "babel src --out-dir dist --source-maps inline",
+    "build-prod": "babel src --out-dir dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "hyperterm-window": "^1.0.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1"
   }
 }
