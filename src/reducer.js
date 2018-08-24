@@ -7,18 +7,19 @@ const STOP_INPUT = "STOP_INPUT";
 
 /** ACTION CREATORS */
 
-const addCharAction = (event, char) => ({
+const addCharAction = (session, event, char) => ({
   type: ADD_CHAR,
-  payload: { event, char }
+  payload: { session, event, char }
 });
-const removeCharAction = (event, char) => ({
+const removeCharAction = (session, event, char) => ({
   type: REMOVE_CHAR,
-  payload: { event, char }
+  payload: { session, event, char }
 });
-const resetInputAction = () => ({
-  type: RESET_INPUT
+const resetInputAction = session => ({
+  type: RESET_INPUT,
+  payload: { session }
 });
-const stopInputAction = () => ({ type: STOP_INPUT });
+const stopInputAction = session => ({ type: STOP_INPUT, payload: { session } });
 
 /** INIT STATE */
 
@@ -69,6 +70,7 @@ function getKeyAction() {
       if (ctrlKey) {
         return resetInputAction();
       }
+      break;
     case keys.enter:
       return resetInputAction();
     case keys.arrowUp:
@@ -85,11 +87,13 @@ function getKeyAction() {
 export const middleware = store => next => action => {
   switch (action.type) {
     case "SESSION_USER_DATA":
-      const action = getKeyAction();
-      if (action) {
-        next(action);
+      {
+        const action = getKeyAction(store.getState());
+        if (action) {
+          next(action);
+        }
       }
-      console.log(store.getState().sessions.autoComplete);
+      // console.log(store.getState().sessions.autoComplete);
       break;
   }
   next(action);
