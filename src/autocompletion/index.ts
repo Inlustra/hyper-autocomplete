@@ -1,5 +1,4 @@
 
-
-export function autocompleteForText(cwd: string, text: string) {
+export async function autocompleteForText(cwd: string, text: string) {
 
 }
