@@ -119,6 +119,9 @@ export const reduceSessions = (
     default:
       const autocompleteSession =
         autocomplete.sessions[state.activeUid] || initSession;
+      if (!state.activeUid) {
+        return state;
+      }
       return state.set("autocomplete", {
         ...autocomplete,
         sessions: {
