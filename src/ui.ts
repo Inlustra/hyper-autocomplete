@@ -1,26 +1,15 @@
-const HyperWindow = require("hyperterm-window");
-const { AutoComplete } = require("./autocomplete");
-
-export const decorateTerm = (Term, { React, notify }) => {
+export const decorateTerm = (Term: any, { React, notify }: any) => {
   return class extends React.Component {
     render() {
       const children = [
-        React.createElement(
-          Term,
-          Object.assign({}, this.props, { key: "term" })
-        )
+        React.createElement(Term, { ...this.props, key: "term" })
       ];
       // Add a custom component to be displayed in the window
-      const windowProps = Object.assign({}, this.props, {
+      const windowProps = {
+        ...this.props,
         key: "window",
         onClose: this.props.clearChart
-      });
-      const hyperwindow = React.createElement(
-        HyperWindow,
-        windowProps,
-        AutoComplete
-      );
-      children.push(hyperwindow);
+      };
       return React.createElement(
         "div",
         { style: { width: "100%", height: "100%", position: "relative" } },
@@ -29,7 +18,6 @@ export const decorateTerm = (Term, { React, notify }) => {
     }
   };
 };
-
 
 /**
       const { data } = action;

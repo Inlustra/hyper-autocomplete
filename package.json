@@ -9,26 +9,30 @@
     "hyper-plugin"
   ],
   "scripts": {
-    "start": "npx babel src --out-dir dist --watch --source-maps inline",
-    "build": "babel src --out-dir dist --source-maps inline",
+    "start": "babel src --out-dir dist --extensions \".ts,.tsx\" --watch",
+    "build": "tsc --emitDeclarationOnly && babel src --out-dir dist --extensions \".ts,.tsx\"",
     "build-prod": "babel src --out-dir dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@babel/core": "^7.0.0-rc.2",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0-rc.2",
     "hyperterm-window": "^1.0.1"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
+    "@babel/preset-typescript": "^7.0.0-rc.2",
+    "@babel/cli": "^7.0.0-rc.2",
+    "@babel/preset-env": "^7.0.0-rc.2",
+    "@babel/preset-react": "^7.0.0-rc.2",
+    "@types/react": "^16.4.11",
     "babel-eslint": "^9.0.0-beta.3",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
-    "babel-preset-react": "^6.24.1",
     "eslint": "^5.4.0",
     "eslint-config-prettier": "^3.0.1",
     "eslint-plugin-prettier": "^2.6.2",
     "eslint-plugin-react": "^7.11.1",
-    "prettier": "^1.14.2"
+    "prettier": "^1.14.2",
+    "typescript": "^3.0.1"
   }
 }
