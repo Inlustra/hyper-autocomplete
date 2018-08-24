@@ -17,11 +17,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@babel/core": "^7.0.0-rc.2",
-    "@babel/plugin-proposal-object-rest-spread": "^7.0.0-rc.2",
     "hyperterm-window": "^1.0.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.0.0-rc.2",
+    "@babel/plugin-proposal-class-properties": "^7.0.0-rc.2",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0-rc.2",
     "@babel/preset-typescript": "^7.0.0-rc.2",
     "@babel/cli": "^7.0.0-rc.2",
     "@babel/preset-env": "^7.0.0-rc.2",

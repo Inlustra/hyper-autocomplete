@@ -1,2 +1,2 @@
-//export { decorateTerm, getTermProps, mapTermsState } from "./ui";
+export { decorateTerm } from "./ui";
 export { middleware, reduceSessions } from "./reducer";

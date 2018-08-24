@@ -12,7 +12,6 @@ enum ActionTypes {
 interface AddCharAction {
   type: ActionTypes.AddChar;
   payload: {
-    session: string;
     event: KeyboardEvent;
     char: string;
   };
@@ -20,23 +19,14 @@ interface AddCharAction {
 
 interface RemoveCharAction {
   type: ActionTypes.RemoveChar;
-  payload: {
-    session: string;
-  };
 }
 
 interface ResetInputAction {
   type: ActionTypes.ResetInput;
-  payload: {
-    session: string;
-  };
 }
 
 interface StopInputAction {
   type: ActionTypes.StopInput;
-  payload: {
-    session: string;
-  };
 }
 
 type Actions =
@@ -47,25 +37,18 @@ type Actions =
 
 /** ACTION CREATORS */
 
-const addCharAction = (
-  session: string,
-  event: KeyboardEvent,
-  char: string
-): AddCharAction => ({
+const addCharAction = (event: KeyboardEvent, char: string): AddCharAction => ({
   type: ActionTypes.AddChar,
-  payload: { session, event, char }
+  payload: { event, char }
 });
-const removeCharAction = (session: string): RemoveCharAction => ({
-  type: ActionTypes.RemoveChar,
-  payload: { session }
+const removeCharAction = (): RemoveCharAction => ({
+  type: ActionTypes.RemoveChar
 });
-const resetInputAction = (session: string): ResetInputAction => ({
-  type: ActionTypes.ResetInput,
-  payload: { session }
+const resetInputAction = (): ResetInputAction => ({
+  type: ActionTypes.ResetInput
 });
-const stopInputAction = (session: string): StopInputAction => ({
-  type: ActionTypes.StopInput,
-  payload: { session }
+const stopInputAction = (): StopInputAction => ({
+  type: ActionTypes.StopInput
 });
 
 /** INIT STATE */
@@ -134,23 +117,19 @@ function getKeyAction(session: string): Actions | undefined {
   switch (keyCode) {
     case keys.c:
       if (ctrlKey) {
-        return resetInputAction(session);
+        return resetInputAction();
       }
       break;
     case keys.enter:
-      return resetInputAction(session);
+      return resetInputAction();
     case keys.arrowUp:
     case keys.arrowDown:
-      return stopInputAction(session);
+      return stopInputAction();
     case keys.backspace:
-      return removeCharAction(session);
+      return removeCharAction();
     default:
       if (keyCode || charCode)
-        return addCharAction(
-          session,
-          event,
-          String.fromCharCode(keyCode || charCode)
-        );
+        return addCharAction(event, String.fromCharCode(keyCode || charCode));
   }
 }
 
@@ -165,7 +144,7 @@ export const middleware = (store: any) => (
           next(action);
         }
       }
-      console.log(store.getState().sessions);
+      console.log(store.getState());
       break;
   }
   next(action);
