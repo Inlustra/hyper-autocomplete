@@ -1,5 +1,10 @@
 import { keys } from "./utils";
 
+enum HyperActionTypes {
+  Init = "INIT",
+  SetXTermTitle = "SESSION_SET_XTERM_TITLE"
+}
+
 enum ActionTypes {
   AddChar = "ADD_CHAR",
   RemoveChar = "REMOVE_CHAR",
@@ -29,7 +34,12 @@ interface StopInputAction {
   type: ActionTypes.StopInput;
 }
 
+type HyperActions =
+  | { type: HyperActionTypes.SetXTermTitle }
+  | { type: HyperActionTypes.Init };
+
 type Actions =
+  | HyperActions
   | AddCharAction
   | RemoveCharAction
   | ResetInputAction
@@ -59,12 +69,18 @@ const initState: Autocomplete = {
 
 const initSession: AutocompleteSession = {
   currentUserInput: "",
-  stopped: false
+  stopped: false,
+  items: [
+    {
+      title: "string"
+    }
+  ]
 };
 
 /** REDUCERS */
 
 export const reduceAutocompleteSession = (
+  globalState: Autocomplete,
   state: AutocompleteSession,
   action: Actions
 ): AutocompleteSession => {
@@ -97,15 +113,24 @@ export const reduceSessions = (
   action: Actions
 ): HyperSessions & AutocompleteState => {
   const autocomplete = state.autocomplete || initState;
-  const autocompleteSession =
-    autocomplete.sessions[state.activeUid] || initSession;
-  return state.set("autocomplete", {
-    ...autocomplete,
-    sessions: {
-      ...autocomplete.sessions,
-      [state.activeUid]: reduceAutocompleteSession(autocompleteSession, action)
-    }
-  });
+  switch (action.type) {
+    case "INIT":
+      return state.set("autocomplete", { sessions: autocomplete.sessions });
+    default:
+      const autocompleteSession =
+        autocomplete.sessions[state.activeUid] || initSession;
+      return state.set("autocomplete", {
+        ...autocomplete,
+        sessions: {
+          ...autocomplete.sessions,
+          [state.activeUid]: reduceAutocompleteSession(
+            autocomplete,
+            autocompleteSession,
+            action
+          )
+        }
+      });
+  }
 };
 
 function getKeyAction(session: string): Actions | undefined {
@@ -144,8 +169,26 @@ export const middleware = (store: any) => (
           next(action);
         }
       }
-      console.log(store.getState());
       break;
   }
   next(action);
+};
+
+export const mapTermsState = (
+  state: HyperSessions & AutocompleteState,
+  map: any
+) => {
+  return { ...map, autocomplete: state.sessions.autocomplete };
+};
+
+export const getTermGroupProps = (
+  uid: string,
+  parentProps: any,
+  props: any
+) => {
+  return { ...props, autocomplete: parentProps.autocomplete };
+};
+
+export const getTermProps = (uid: string, parentProps: any, props: any) => {
+  return { ...props, autocomplete: parentProps.autocomplete.sessions[uid] };
 };

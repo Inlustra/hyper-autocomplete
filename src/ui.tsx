@@ -1,8 +1,13 @@
 import React from "react";
 import { AutocompleteWindow } from "./components/autocomplete-window";
 
+interface UIProps {
+  autocomplete: AutocompleteSession;
+  padding: number;
+}
+
 export const decorateTerm = (Term: any, { notify }: any) => {
-  return class extends React.Component<any> {
+  return class extends React.Component<UIProps> {
     divElement: any | undefined;
     autoCompleteWindow: AutocompleteWindow | undefined | null;
 
@@ -23,7 +28,9 @@ export const decorateTerm = (Term: any, { notify }: any) => {
         >
           <AutocompleteWindow
             ref={instance => (this.autoCompleteWindow = instance)}
+            input={this.props.autocomplete.currentUserInput}
             padding={this.props.padding}
+            items={this.props.autocomplete.items}
           />
           <Term
             {...this.props}
@@ -48,23 +55,6 @@ export const decorateTerm = (Term: any, { notify }: any) => {
 
     componentDidMount() {
       this.resizeAutocompleteWindow();
-      this.autoCompleteWindow &&
-        this.autoCompleteWindow.setState({
-          items: [
-            {
-              title: "git"
-            },
-            {
-              title: "gcc"
-            },
-            {
-              title: "g++"
-            },
-            {
-              title: "gatherHeaderDoc"
-            }
-          ]
-        });
     }
   };
 };

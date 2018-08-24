@@ -23,14 +23,10 @@ export class AutocompleteItemComponent extends React.PureComponent<
   }
 }
 
-interface AutocompleteItem {
-  title: string;
-  expanded?: boolean;
-  description?: string;
-}
-
 interface AutocompleteWindowProps {
+  input: string;
   padding: number;
+  items: AutocompleteItem[];
 }
 
 export class AutocompleteWindow extends React.PureComponent<
@@ -38,7 +34,6 @@ export class AutocompleteWindow extends React.PureComponent<
 > {
   state: {
     position: CursorPosition;
-    items: AutocompleteItem[];
     terminalWidth: number;
     terminalHeight: number;
   };
@@ -48,7 +43,6 @@ export class AutocompleteWindow extends React.PureComponent<
   constructor(props: AutocompleteWindowProps) {
     super(props);
     this.state = {
-      items: [],
       terminalWidth: 0,
       terminalHeight: 0,
       position: {
@@ -63,7 +57,7 @@ export class AutocompleteWindow extends React.PureComponent<
   }
 
   render() {
-    return this.state.items.length < 1 ? (
+    return this.props.items.length < 1 ? (
       <div />
     ) : (
       <div
@@ -83,7 +77,7 @@ export class AutocompleteWindow extends React.PureComponent<
             flexDirection: this.shouldInvert() ? "column-reverse" : "column"
           }}
         >
-          {this.state.items.map(item => (
+          {this.props.items.map(item => (
             <AutocompleteItemComponent
               title={item.title}
               description={item.description}
@@ -97,7 +91,7 @@ export class AutocompleteWindow extends React.PureComponent<
   getItemsHeight() {
     return Math.min(
       AutocompleteWindow.MAX_HEIGHT_PX,
-      this.state.items.length * AutocompleteItemComponent.ITEM_HEIGHT_PX
+      this.props.items.length * AutocompleteItemComponent.ITEM_HEIGHT_PX
     );
   }
 
