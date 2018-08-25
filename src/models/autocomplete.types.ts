@@ -18,6 +18,10 @@ interface Autocomplete {
   };
 }
 
-interface AutocompleteState {
+interface AutocompleteSessionsState {
   autocomplete: Autocomplete;
+}
+
+interface AutocompleteState {
+  sessions: AutocompleteSessionsState
 }

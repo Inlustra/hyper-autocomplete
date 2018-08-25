@@ -1,11 +1,14 @@
 export { decorateTerm } from './ui';
 export { middleware, reduceSessions } from './store/reducer';
 
+import { getAutocomplete, getSessionByUid } from './store/reducer';
+
 export const mapTermsState = (
-  state: HyperSessions & AutocompleteState,
+  state: HyperState & AutocompleteState,
   map: any
 ) => {
-  return { ...map, autocomplete: state.sessions.autocomplete };
+  console.log(state);
+  return { ...map, autocomplete: getAutocomplete(state.sessions) };
 };
 
 export const getTermGroupProps = (
@@ -17,5 +20,5 @@ export const getTermGroupProps = (
 };
 
 export const getTermProps = (uid: string, parentProps: any, props: any) => {
-  return { ...props, autocomplete: parentProps.autocomplete.sessions[uid] };
+  return { ...props, autocomplete: getSessionByUid(parentProps, uid) };
 };

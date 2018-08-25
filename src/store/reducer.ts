@@ -30,64 +30,68 @@ const initSession: AutocompleteSession = {
   ]
 };
 
+/**
+ * SELECTORS
+ */
+
+export const getAutocomplete = (state: AutocompleteSessionsState) =>
+  state.autocomplete || initState;
+export const getSessions = (state: AutocompleteSessionsState) =>
+  getAutocomplete(state).sessions;
+
+export const getSessionByUid = (
+  state: AutocompleteSessionsState,
+  uid: string
+) => getSessions(state)[uid] || initSession;
+
 /** REDUCERS */
 
-export const reduceAutocompleteSession = (
-  globalState: Autocomplete,
-  state: AutocompleteSession,
+export const reduceSessions = (
+  state: HyperSessions & AutocompleteSessionsState,
   action: Actions
-): AutocompleteSession => {
+): HyperSessions & AutocompleteSessionsState => {
   switch (action.type) {
     case ActionTypes.SetCwd:
-      return state;
-    case ActionTypes.ResetInput:
-      return { ...state, currentUserInput: '', stopped: false };
-    case ActionTypes.StopInput:
-      return { ...state, currentUserInput: '', stopped: true };
-    case ActionTypes.AddChar:
-      return state.stopped
-        ? state
-        : {
-            ...state,
-            currentUserInput: state.currentUserInput + action.payload.char
-          };
-    case ActionTypes.RemoveChar:
-      return state.stopped
-        ? state
-        : {
-            ...state,
-            currentUserInput: state.currentUserInput.slice(0, -1)
-          };
-    default:
-      return state;
-  }
-};
-
-export const reduceSessions = (
-  state: HyperSessions & AutocompleteState,
-  action: Actions
-): HyperSessions & AutocompleteState => {
-  const autocomplete = state.autocomplete || initState;
-  switch (action.type) {
-    case HyperActionTypes.Init:
-      return state.set('autocomplete', { sessions: autocomplete.sessions });
-    default:
-      const autocompleteSession =
-        autocomplete.sessions[state.activeUid] || initSession;
-      if (!state.activeUid) {
-        return state;
-      }
-      return state.set('autocomplete', {
-        ...autocomplete,
-        sessions: {
-          ...autocomplete.sessions,
-          [state.activeUid]: reduceAutocompleteSession(
-            autocomplete,
-            autocompleteSession,
-            action
-          )
-        }
+      return state.setIn(['autocomplete', 'sessions', action.payload.uid], {
+        ...getSessionByUid(state, action.payload.uid),
+        cwd: action.payload.cwd
       });
+    case ActionTypes.ResetInput:
+      return state.setIn(['autocomplete', 'sessions', action.payload.uid], {
+        ...getSessionByUid(state, action.payload.uid),
+        currentUserInput: '',
+        stopped: false
+      });
+    case ActionTypes.StopInput:
+      return state.setIn(['autocomplete', 'sessions', action.payload.uid], {
+        ...getSessionByUid(state, action.payload.uid),
+        currentUserInput: '',
+        stopped: true
+      });
+    case ActionTypes.AddChar: {
+      const session = getSessionByUid(state, action.payload.uid);
+      return session.stopped
+        ? state
+        : state.setIn(['autocomplete', 'sessions', action.payload.uid], {
+            ...getSessionByUid(state, action.payload.uid),
+            currentUserInput: session.currentUserInput + action.payload.char
+          });
+    }
+    case ActionTypes.RemoveChar: {
+      const session = getSessionByUid(state, action.payload.uid);
+      return session.stopped
+        ? state
+        : state.setIn(['autocomplete', 'sessions', action.payload.uid], {
+            ...getSessionByUid(state, action.payload.uid),
+            currentUserInput: session.currentUserInput.slice(0, -1)
+          });
+    }
+    case HyperActionTypes.Init:
+      return state.set('autocomplete', initState);
+    default:
+      console.log(action.type);
+
+      return state;
   }
 };
 
@@ -108,7 +112,7 @@ export const setCwd = (
 export const middleware = (store: any) => (
   next: (action: Action<any>) => {}
 ) => (action: Actions) => {
-  const state: HyperState = store.getState();
+  const state: HyperState & AutocompleteSessionsState = store.getState();
   const activeUid = state.sessions.activeUid;
   switch (action.type) {
     /**
