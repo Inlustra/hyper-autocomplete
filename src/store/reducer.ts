@@ -6,12 +6,11 @@ import {
   Actions,
   HyperActionTypes,
   ActionTypes,
-  HyperActions,
   stopInputAction,
   removeCharAction,
-  addCharAction,
-  setCwdAction
+  addCharAction
 } from './actions';
+import { setCwd, updateSuggestions } from './effects';
 
 /** INIT STATE */
 
@@ -73,7 +72,7 @@ export const reduceSessions = (
       return session.stopped
         ? state
         : state.setIn(['autocomplete', 'sessions', action.payload.uid], {
-            ...getSessionByUid(state, action.payload.uid),
+            ...session,
             currentUserInput: session.currentUserInput + action.payload.char
           });
     }
@@ -82,37 +81,21 @@ export const reduceSessions = (
       return session.stopped
         ? state
         : state.setIn(['autocomplete', 'sessions', action.payload.uid], {
-            ...getSessionByUid(state, action.payload.uid),
+            ...session,
             currentUserInput: session.currentUserInput.slice(0, -1)
           });
     }
     case HyperActionTypes.Init:
       return state.set('autocomplete', initState);
     default:
-      console.log(action.type);
-
       return state;
   }
-};
-
-export const setCwd = (
-  dispatch: Function,
-  uid: string,
-  pid: string | number
-) => {
-  exec(
-    `lsof -p ${pid} | awk '$4=="cwd"' | tr -s ' ' | cut -d ' ' -f9-`,
-    (err: any, stdout: string) => {
-      console.log(stdout);
-      dispatch(setCwdAction(uid, stdout.trim()));
-    }
-  );
 };
 
 export const middleware = (store: any) => (
   next: (action: Action<any>) => {}
 ) => (action: Actions) => {
-  const state: HyperState & AutocompleteSessionsState = store.getState();
+  const state: HyperState & AutocompleteState = store.getState();
   const activeUid = state.sessions.activeUid;
   switch (action.type) {
     /**
@@ -147,22 +130,22 @@ export const middleware = (store: any) => (
       switch (keyCode) {
         case keys.c:
           if (ctrlKey) {
-            next(resetInputAction(activeUid));
+            store.dispatch(resetInputAction(activeUid));
           }
           break;
         case keys.enter:
-          next(resetInputAction(activeUid));
+          store.dispatch(resetInputAction(activeUid));
           break;
         case keys.arrowUp:
         case keys.arrowDown:
-          next(stopInputAction(activeUid));
+          store.dispatch(stopInputAction(activeUid));
           break;
         case keys.backspace:
-          next(removeCharAction(activeUid));
+          store.dispatch(removeCharAction(activeUid));
           break;
         default:
           if (keyCode || charCode)
-            next(
+            store.dispatch(
               addCharAction(
                 activeUid,
                 event,
@@ -170,7 +153,24 @@ export const middleware = (store: any) => (
               )
             );
       }
+      break;
     }
   }
   next(action);
+  switch (action.type) {
+    /**
+     * Update Autocomplete Suggestions
+     */
+    case ActionTypes.AddChar:
+    case ActionTypes.RemoveChar:
+    case ActionTypes.ResetInput:
+    case ActionTypes.StopInput:
+    case ActionTypes.SetCwd:
+      updateSuggestions(
+        store.dispatch,
+        action.payload.uid,
+        getSessionByUid(store.getState().sessions, action.payload.uid)
+      );
+      break;
+  }
 };

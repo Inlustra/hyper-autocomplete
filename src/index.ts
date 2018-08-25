@@ -7,7 +7,6 @@ export const mapTermsState = (
   state: HyperState & AutocompleteState,
   map: any
 ) => {
-  console.log(state);
   return { ...map, autocomplete: getAutocomplete(state.sessions) };
 };
 
