@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 interface AutocompleteItemProps {
   title: string;
@@ -14,7 +14,8 @@ export class AutocompleteItemComponent extends React.PureComponent<
     return (
       <div
         style={{
-          height: AutocompleteItemComponent.ITEM_HEIGHT_PX + "px"
+          lineHeight: AutocompleteItemComponent.ITEM_HEIGHT_PX + 'px',
+          height: AutocompleteItemComponent.ITEM_HEIGHT_PX + 'px'
         }}
       >
         {this.props.title}
@@ -27,6 +28,7 @@ interface AutocompleteWindowProps {
   input: string;
   padding: number;
   items: AutocompleteItem[];
+  backgroundColor: string;
 }
 
 export class AutocompleteWindow extends React.PureComponent<
@@ -62,19 +64,20 @@ export class AutocompleteWindow extends React.PureComponent<
     ) : (
       <div
         style={{
-          position: "absolute",
+          position: 'absolute',
           padding: this.props.padding,
           zIndex: 1,
           ...this.calcPosition()
         }}
-      >
+        >
         <div
           style={{
-            color: "white",
-            width: "300px",
-            border: "1px solid white",
-            display: "flex",
-            flexDirection: this.shouldInvert() ? "column-reverse" : "column"
+            color: 'white',
+            width: '300px',
+            border: '1px solid white',
+            display: 'flex',
+            backgroundColor: this.props.backgroundColor,
+            flexDirection: this.shouldInvert() ? 'column-reverse' : 'column'
           }}
         >
           {this.props.items.map(item => (
@@ -102,7 +105,7 @@ export class AutocompleteWindow extends React.PureComponent<
   shouldInvert() {
     return (
       this.state.terminalHeight <
-      this.getTerminalPositionTop() + this.getItemsHeight()
+      this.getTerminalPositionTop() + this.getItemsHeight() + 15
     );
   }
 

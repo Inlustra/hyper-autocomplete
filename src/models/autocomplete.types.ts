@@ -9,6 +9,7 @@ interface AutocompleteSession {
   currentUserInput: string;
   stopped: boolean;
   items: AutocompleteItem[]
+  cwd: string
 }
 
 interface Autocomplete {
@@ -18,5 +19,5 @@ interface Autocomplete {
 }
 
 interface AutocompleteState {
-  autocomplete?: Autocomplete;
+  autocomplete: Autocomplete;
 }

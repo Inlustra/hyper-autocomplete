@@ -19,6 +19,7 @@ interface HyperSessions {
     key: K,
     obj: T
   ) => HyperSessions & { [key in K]: T };
+  mergeDeep: <T>(t: T) => any;
 }
 
 interface HyperState {

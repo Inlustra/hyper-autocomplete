@@ -4,9 +4,10 @@ import { AutocompleteWindow } from "./components/autocomplete-window";
 interface UIProps {
   autocomplete: AutocompleteSession;
   padding: number;
+  backgroundColor: string;
 }
 
-export const decorateTerm = (Term: any, { notify }: any) => {
+export const decorateTerm = (Term: any) => {
   return class extends React.Component<UIProps> {
     divElement: any | undefined;
     autoCompleteWindow: AutocompleteWindow | undefined | null;
@@ -28,6 +29,7 @@ export const decorateTerm = (Term: any, { notify }: any) => {
         >
           <AutocompleteWindow
             ref={instance => (this.autoCompleteWindow = instance)}
+            backgroundColor={this.props.backgroundColor}
             input={this.props.autocomplete.currentUserInput}
             padding={this.props.padding}
             items={this.props.autocomplete.items}
