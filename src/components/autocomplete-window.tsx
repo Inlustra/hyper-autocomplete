@@ -1,27 +1,5 @@
 import React from 'react';
-
-interface AutocompleteItemProps {
-  suggestion: Suggestion;
-}
-
-export class AutocompleteItemComponent extends React.PureComponent<
-  AutocompleteItemProps
-> {
-  public static ITEM_HEIGHT_PX = 30;
-
-  render() {
-    return (
-      <div
-        style={{
-          lineHeight: AutocompleteItemComponent.ITEM_HEIGHT_PX + 'px',
-          height: AutocompleteItemComponent.ITEM_HEIGHT_PX + 'px'
-        }}
-      >
-        {this.props.suggestion.title}
-      </div>
-    );
-  }
-}
+import { AutocompleteItemComponent } from './autocomplete-item';
 
 interface AutocompleteWindowProps {
   padding: number;
@@ -64,10 +42,10 @@ export class AutocompleteWindow extends React.PureComponent<
         style={{
           position: 'absolute',
           padding: this.props.padding,
-          zIndex: 1,
+          zIndex: 4,
           ...this.calcPosition()
         }}
-        >
+      >
         <div
           style={{
             maxHeight: AutocompleteWindow.MAX_HEIGHT_PX + 'px',
@@ -75,8 +53,11 @@ export class AutocompleteWindow extends React.PureComponent<
             width: '300px',
             border: '1px solid white',
             display: 'flex',
-            overflow: 'hidden',
+            overflowX: 'hidden',
+            overflowY: 'scroll',
             backgroundColor: this.props.backgroundColor,
+            boxShadow:
+              '0 4px 8px 0 rgba(0,0,0,0.12), 0 2px 4px 0 rgba(0,0,0,0.08)',
             flexDirection: this.shouldInvert() ? 'column-reverse' : 'column'
           }}
         >

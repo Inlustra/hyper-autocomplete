@@ -27,12 +27,6 @@ export const decorateTerm = (Term: any) => {
           ref={divElement => (this.divElement = divElement)}
           style={{ height: '100%', width: '100%', position: 'relative' }}
         >
-          <AutocompleteWindow
-            ref={instance => (this.autoCompleteWindow = instance)}
-            backgroundColor={this.props.backgroundColor}
-            padding={this.props.padding}
-            suggestions={this.props.context.suggestions}
-          />
           <Term
             {...this.props}
             onCursorMove={(cursorPos: CursorPosition) => {
@@ -40,6 +34,12 @@ export const decorateTerm = (Term: any) => {
                 this.autoCompleteWindow.setState({ position: cursorPos });
             }}
             onResize={() => this.resizeAutocompleteWindow()}
+          />
+          <AutocompleteWindow
+            ref={instance => (this.autoCompleteWindow = instance)}
+            backgroundColor={this.props.backgroundColor}
+            padding={this.props.padding}
+            suggestions={this.props.context.suggestions}
           />
         </div>
       );
