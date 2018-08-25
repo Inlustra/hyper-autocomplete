@@ -1,8 +1,7 @@
 import React from 'react';
 
 interface AutocompleteItemProps {
-  title: string;
-  description?: string;
+  suggestion: Suggestion;
 }
 
 export class AutocompleteItemComponent extends React.PureComponent<
@@ -18,16 +17,15 @@ export class AutocompleteItemComponent extends React.PureComponent<
           height: AutocompleteItemComponent.ITEM_HEIGHT_PX + 'px'
         }}
       >
-        {this.props.title}
+        {this.props.suggestion.title}
       </div>
     );
   }
 }
 
 interface AutocompleteWindowProps {
-  input: string;
   padding: number;
-  items: AutocompleteItem[];
+  suggestions: Suggestion[];
   backgroundColor: string;
 }
 
@@ -59,7 +57,7 @@ export class AutocompleteWindow extends React.PureComponent<
   }
 
   render() {
-    return this.props.items.length < 1 ? (
+    return this.props.suggestions.length < 1 ? (
       <div />
     ) : (
       <div
@@ -72,19 +70,18 @@ export class AutocompleteWindow extends React.PureComponent<
         >
         <div
           style={{
+            maxHeight: AutocompleteWindow.MAX_HEIGHT_PX + 'px',
             color: 'white',
             width: '300px',
             border: '1px solid white',
             display: 'flex',
+            overflow: 'hidden',
             backgroundColor: this.props.backgroundColor,
             flexDirection: this.shouldInvert() ? 'column-reverse' : 'column'
           }}
         >
-          {this.props.items.map(item => (
-            <AutocompleteItemComponent
-              title={item.title}
-              description={item.description}
-            />
+          {this.props.suggestions.map(item => (
+            <AutocompleteItemComponent suggestion={item} />
           ))}
         </div>
       </div>
@@ -94,7 +91,7 @@ export class AutocompleteWindow extends React.PureComponent<
   getItemsHeight() {
     return Math.min(
       AutocompleteWindow.MAX_HEIGHT_PX,
-      this.props.items.length * AutocompleteItemComponent.ITEM_HEIGHT_PX
+      this.props.suggestions.length * AutocompleteItemComponent.ITEM_HEIGHT_PX
     );
   }
 

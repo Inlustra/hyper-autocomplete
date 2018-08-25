@@ -1,8 +1,8 @@
-import React from "react";
-import { AutocompleteWindow } from "./components/autocomplete-window";
+import React from 'react';
+import { AutocompleteWindow } from './components/autocomplete-window';
 
 interface UIProps {
-  autocomplete: AutocompleteSession;
+  context: AutocompleteContext;
   padding: number;
   backgroundColor: string;
 }
@@ -25,14 +25,13 @@ export const decorateTerm = (Term: any) => {
       return (
         <div
           ref={divElement => (this.divElement = divElement)}
-          style={{ height: "100%", width: "100%", position: "relative" }}
+          style={{ height: '100%', width: '100%', position: 'relative' }}
         >
           <AutocompleteWindow
             ref={instance => (this.autoCompleteWindow = instance)}
             backgroundColor={this.props.backgroundColor}
-            input={this.props.autocomplete.currentUserInput}
             padding={this.props.padding}
-            items={this.props.autocomplete.items}
+            suggestions={this.props.context.suggestions}
           />
           <Term
             {...this.props}

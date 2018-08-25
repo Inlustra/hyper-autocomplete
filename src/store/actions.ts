@@ -12,7 +12,8 @@ export enum ActionTypes {
   RemoveChar = 'REMOVE_CHAR',
   ResetInput = 'RESET_INPUT',
   StopInput = 'STOP_INPUT',
-  SetCwd = 'SET_CWD'
+  SetCwd = 'SET_CWD',
+  SetSuggestions = 'SET_SUGGESTIONS'
 }
 
 /** ACTION TYPES */
@@ -46,6 +47,11 @@ export interface StopInputAction {
   payload: { uid: string };
 }
 
+export interface SetSuggestionsAction {
+  type: ActionTypes.SetSuggestions;
+  payload: { uid: string; suggestions: Suggestion[] };
+}
+
 export type HyperActions =
   | { type: HyperActionTypes.SetXTermTitle; uid: string }
   | { type: HyperActionTypes.Init }
@@ -60,9 +66,18 @@ export type Actions =
   | RemoveCharAction
   | ResetInputAction
   | StopInputAction
-  | SetCwdAction;
+  | SetCwdAction
+  | SetSuggestionsAction;
 
 /** ACTION CREATORS */
+
+export const setSuggestionsAction = (
+  uid: string,
+  suggestions: Suggestion[]
+): SetSuggestionsAction => ({
+  type: ActionTypes.SetSuggestions,
+  payload: { uid, suggestions }
+});
 
 export const setCwdAction = (uid: string, cwd: string): SetCwdAction => ({
   type: ActionTypes.SetCwd,

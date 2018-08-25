@@ -1,5 +1,5 @@
 export const keys = {
-  c: 67,
+  c: 99,
   enter: 13,
   arrowDown: 40,
   arrowUp: 38,

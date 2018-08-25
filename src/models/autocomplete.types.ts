@@ -1,20 +1,22 @@
-
-
-interface AutocompleteItem {
+interface Suggestion {
   title: string;
-  expanded?: boolean;
-  description?: string;
+  detail?: string;
+  documentation?: string;
+  sortText?: string;
+  filterText?: string;
+  insertText?: string;
 }
-interface AutocompleteSession {
+
+interface AutocompleteContext {
   currentUserInput: string;
   stopped: boolean;
-  items: AutocompleteItem[]
-  cwd: string
+  suggestions: Suggestion[];
+  cwd: string;
 }
 
 interface Autocomplete {
   sessions: {
-    [key: string]: AutocompleteSession | undefined;
+    [key: string]: AutocompleteContext | undefined;
   };
 }
 
@@ -23,5 +25,5 @@ interface AutocompleteSessionsState {
 }
 
 interface AutocompleteState {
-  sessions: AutocompleteSessionsState
+  sessions: AutocompleteSessionsState;
 }

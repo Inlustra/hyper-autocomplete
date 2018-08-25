@@ -19,5 +19,5 @@ export const getTermGroupProps = (
 };
 
 export const getTermProps = (uid: string, parentProps: any, props: any) => {
-  return { ...props, autocomplete: getSessionByUid(parentProps, uid) };
+  return { ...props, context: getSessionByUid(parentProps, uid) };
 };

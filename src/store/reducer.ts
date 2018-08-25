@@ -1,5 +1,4 @@
 import { keys } from '../utils';
-import { exec } from 'child_process';
 
 import {
   resetInputAction,
@@ -18,15 +17,11 @@ const initState: Autocomplete = {
   sessions: {}
 };
 
-const initSession: AutocompleteSession = {
+const initSession: AutocompleteContext = {
   currentUserInput: '',
   stopped: false,
   cwd: '',
-  items: [
-    {
-      title: 'string'
-    }
-  ]
+  suggestions: []
 };
 
 /**
@@ -67,6 +62,11 @@ export const reduceSessions = (
         currentUserInput: '',
         stopped: true
       });
+    case ActionTypes.SetSuggestions:
+      return state.setIn(['autocomplete', 'sessions', action.payload.uid], {
+        ...getSessionByUid(state, action.payload.uid),
+        suggestions: action.payload.suggestions
+      });
     case ActionTypes.AddChar: {
       const session = getSessionByUid(state, action.payload.uid);
       return session.stopped
@@ -95,6 +95,7 @@ export const reduceSessions = (
 export const middleware = (store: any) => (
   next: (action: Action<any>) => {}
 ) => (action: Actions) => {
+  next(action);
   const state: HyperState & AutocompleteState = store.getState();
   const activeUid = state.sessions.activeUid;
   switch (action.type) {
@@ -155,9 +156,7 @@ export const middleware = (store: any) => (
       }
       break;
     }
-  }
-  next(action);
-  switch (action.type) {
+
     /**
      * Update Autocomplete Suggestions
      */
