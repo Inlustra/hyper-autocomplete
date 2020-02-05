@@ -1,0 +1,3 @@
+interface HyperAutocompleteConfig {
+  prompt: string;
+}

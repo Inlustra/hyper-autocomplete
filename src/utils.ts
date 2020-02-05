@@ -5,3 +5,4 @@ export const keys = {
   arrowUp: 38,
   backspace: 8
 };
+

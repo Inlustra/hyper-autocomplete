@@ -1,10 +1,12 @@
 interface Suggestion {
-  title: string;
+  label: string;
+  kind?: "Function" | "File" | "Directory" | "Executable" | "Snippet";
   detail?: string;
   documentation?: string;
   sortText?: string;
   filterText?: string;
-  insertText?: string;
+  insertText?: string | { value: string };
+  highlightLabel?: React.ReactNode;
 }
 
 interface AutocompleteContext {
@@ -12,6 +14,9 @@ interface AutocompleteContext {
   stopped: boolean;
   suggestions: Suggestion[];
   cwd: string;
+  command?: string;
+  argument?: string;
+  argumentList: string[];
 }
 
 interface Autocomplete {
@@ -26,4 +31,14 @@ interface AutocompleteSessionsState {
 
 interface AutocompleteState {
   sessions: AutocompleteSessionsState;
+}
+
+type AutocompleteProvider = (
+  context: AutocompleteContext
+) => Promise<Suggestion[]>;
+
+interface SubcommandConfig {
+  name: string;
+  detail?: string;
+  provider?: AutocompleteProvider;
 }

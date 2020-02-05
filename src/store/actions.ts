@@ -1,19 +1,26 @@
 export enum HyperActionTypes {
-  Init = 'INIT',
-  SetXTermTitle = 'SESSION_SET_XTERM_TITLE',
-  SessionUserData = 'SESSION_USER_DATA',
-  SessionAdd = 'SESSION_ADD',
-  SessionSetActive = 'SESSION_SET_ACTIVE',
-  SessionAddData = 'SESSION_ADD_DATA'
+  Init = "INIT",
+  SetXTermTitle = "SESSION_SET_XTERM_TITLE",
+  SessionUserData = "SESSION_USER_DATA",
+  SessionAdd = "SESSION_ADD",
+  SessionSetActive = "SESSION_SET_ACTIVE",
+  SessionAddData = "SESSION_ADD_DATA",
+  SessionPtyData = "SESSION_PTY_DATA"
 }
 
 export enum ActionTypes {
-  AddChar = 'ADD_CHAR',
-  RemoveChar = 'REMOVE_CHAR',
-  ResetInput = 'RESET_INPUT',
-  StopInput = 'STOP_INPUT',
-  SetCwd = 'SET_CWD',
-  SetSuggestions = 'SET_SUGGESTIONS'
+  SetCwd = "SET_CWD",
+
+  // Legacy Prompt
+  AddChar = "ADD_CHAR",
+  RemoveChar = "REMOVE_CHAR",
+  ResetInput = "RESET_INPUT",
+  StopInput = "STOP_INPUT",
+  SetSuggestions = "SET_SUGGESTIONS",
+
+  // New Prompt
+  LastLineChange = "LAST_LINE_CHANGE",
+  SetCurrentInput = "SET_CURRENT_INPUT"
 }
 
 /** ACTION TYPES */
@@ -52,12 +59,23 @@ export interface SetSuggestionsAction {
   payload: { uid: string; suggestions: Suggestion[] };
 }
 
+export interface LastLineChangeAction {
+  type: ActionTypes.LastLineChange;
+  payload: { uid: string; line: string | null };
+}
+
+export interface SetCurrentInputAction {
+  type: ActionTypes.SetCurrentInput;
+  payload: { uid: string; input: string };
+}
+
 export type HyperActions =
   | { type: HyperActionTypes.SetXTermTitle; uid: string }
   | { type: HyperActionTypes.Init }
   | { type: HyperActionTypes.SessionUserData }
   | { type: HyperActionTypes.SessionAdd; pid: string }
-  | { type: HyperActionTypes.SessionAddData; pid: string }
+  | { type: HyperActionTypes.SessionAddData; pid: string; data: string }
+  | { type: HyperActionTypes.SessionPtyData; pid: string; data: string }
   | { type: HyperActionTypes.SessionSetActive; uid: string };
 
 export type Actions =
@@ -67,7 +85,9 @@ export type Actions =
   | ResetInputAction
   | StopInputAction
   | SetCwdAction
-  | SetSuggestionsAction;
+  | SetSuggestionsAction
+  | LastLineChangeAction
+  | SetCurrentInputAction;
 
 /** ACTION CREATORS */
 
@@ -106,4 +126,20 @@ export const resetInputAction = (uid: string): ResetInputAction => ({
 export const stopInputAction = (uid: string): StopInputAction => ({
   type: ActionTypes.StopInput,
   payload: { uid }
+});
+
+export const lastLineChange = (
+  uid: string,
+  line: string | null
+): LastLineChangeAction => ({
+  type: ActionTypes.LastLineChange,
+  payload: { uid, line }
+});
+
+export const setCurrentInput = (
+  uid: string,
+  input: string
+): SetCurrentInputAction => ({
+  type: ActionTypes.SetCurrentInput,
+  payload: { uid, input }
 });

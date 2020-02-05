@@ -5,33 +5,19 @@ interface AutocompleteWindowProps {
   padding: number;
   suggestions: Suggestion[];
   backgroundColor: string;
+  terminalHeight: number;
+  terminalWidth: number;
+  position: CursorPosition;
 }
 
 export class AutocompleteWindow extends React.PureComponent<
   AutocompleteWindowProps
 > {
-  state: {
-    position: CursorPosition;
-    terminalWidth: number;
-    terminalHeight: number;
-  };
 
   private static MAX_HEIGHT_PX = 150;
 
   constructor(props: AutocompleteWindowProps) {
     super(props);
-    this.state = {
-      terminalWidth: 0,
-      terminalHeight: 0,
-      position: {
-        x: 0,
-        y: 0,
-        width: 8,
-        height: 8,
-        col: 8,
-        row: 8
-      }
-    };
   }
 
   render() {
@@ -50,7 +36,7 @@ export class AutocompleteWindow extends React.PureComponent<
           style={{
             maxHeight: AutocompleteWindow.MAX_HEIGHT_PX + 'px',
             color: 'white',
-            width: '300px',
+            width: '400px',
             border: '1px solid white',
             display: 'flex',
             overflowX: 'hidden',
@@ -77,12 +63,12 @@ export class AutocompleteWindow extends React.PureComponent<
   }
 
   getTerminalPositionTop() {
-    return this.state.position.y + this.state.position.height;
+    return this.props.position.y + this.props.position.height;
   }
 
   shouldInvert() {
     return (
-      this.state.terminalHeight <
+      this.props.terminalHeight <
       this.getTerminalPositionTop() + this.getItemsHeight() + 15
     );
   }
@@ -91,9 +77,9 @@ export class AutocompleteWindow extends React.PureComponent<
     const totalHeight = this.getItemsHeight();
     return {
       top: this.shouldInvert()
-        ? this.state.position.y - totalHeight
-        : this.state.position.y + this.state.position.height,
-      left: this.state.position.x + this.state.position.width
+        ? this.props.position.y - totalHeight
+        : this.props.position.y + this.props.position.height,
+      left: this.props.position.x + this.props.position.width
     };
   }
 }
