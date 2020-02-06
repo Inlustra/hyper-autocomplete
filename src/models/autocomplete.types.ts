@@ -10,6 +10,12 @@ interface Suggestion {
 }
 
 interface AutocompleteContext {
+  column: number;
+  splitPosition: number;
+  scrollPosition: number;
+  inputLine: number | null;
+  currentLine: string | null;
+  cursorPosition: CursorPosition | null;
   currentUserInput: string;
   stopped: boolean;
   suggestions: Suggestion[];

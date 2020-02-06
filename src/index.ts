@@ -1,9 +1,7 @@
 export { decorateTerm } from "./ui";
-import { inspect } from "util";
 export { middleware, reduceSessions } from "./store/reducer";
 
 import { getAutocomplete, getSessionByUid } from "./store/reducer";
-import { getPrompt } from "./common/shell";
 
 export const mapTermsState = (
   state: HyperState & AutocompleteState,

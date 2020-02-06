@@ -1,6 +1,6 @@
 import * as React from "react";
 import { AutocompleteWindow } from "./components/autocomplete-window";
-import { lastLineChange } from "./store/actions";
+import { uiChangeAction } from "./store/actions";
 
 interface UIProps {
   uid: string;
@@ -11,19 +11,25 @@ interface UIProps {
   backgroundColor: string;
 }
 
+interface State {
+  scrollPosition: number;
+  width: number;
+  height: number;
+  cursorPosition: CursorPosition;
+  registered: boolean;
+}
+
 export const decorateTerm = (Term: any, something: any) => {
-  const Component = class extends React.Component<UIProps> {
+  const Component = class extends React.Component<UIProps, State> {
     divElement: HTMLDivElement | null = null;
 
     constructor(props: any) {
       super(props);
     }
 
-    state: {
-      width: number;
-      height: number;
-      cursorPosition: CursorPosition;
-    } = {
+    state: State = {
+      scrollPosition: 0,
+      registered: false,
       width: 0,
       height: 0,
       cursorPosition: {
@@ -36,8 +42,40 @@ export const decorateTerm = (Term: any, something: any) => {
       }
     };
 
-    getTerm() {
+    componentDidUpdate() {
+      if (!this.state.registered) {
+        // TODO: Move this to the right lifecycle
+        const term = this.getTerm();
+        if (term) {
+          this.getTerm().on("scroll", (scrollPosition: number) => {
+            this.setState({ scrollPosition });
+            this.handleLineChange();
+          });
+          this.setState({ registered: true });
+        }
+      }
+    }
+
+    getTerm(): any | undefined {
       return this.props.term?._core ?? this.props.term;
+    }
+
+    getRows(): number | null {
+      return this.getTerm()?.buffer.lines.length;
+    }
+
+    handleLineChange() {
+      const { cursorPosition, scrollPosition } = this.state;
+      const { uid } = this.props;
+      const currentLine = this.getLine(cursorPosition.row + scrollPosition);
+      window.store.dispatch(
+        uiChangeAction({
+          uid,
+          cursorPosition,
+          scrollPosition,
+          currentLine
+        })
+      );
     }
 
     getLastLine() {
@@ -70,6 +108,11 @@ export const decorateTerm = (Term: any, something: any) => {
       return line;
     }
 
+    getCursor(): string | null {
+      const term = this.getTerm();
+      return term?.buffer.cursorX;
+    }
+
     render() {
       return (
         <div
@@ -80,8 +123,7 @@ export const decorateTerm = (Term: any, something: any) => {
             {...this.props}
             onCursorMove={(cursorPosition: CursorPosition) => {
               this.setState({ cursorPosition });
-              const action = lastLineChange(this.props.uid, this.getLastLine());
-              window.store.dispatch(action);
+              this.handleLineChange();
             }}
             onResize={() => this.resizeAutocompleteWindow()}
           />

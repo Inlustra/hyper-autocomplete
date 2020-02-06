@@ -5,7 +5,8 @@ export enum HyperActionTypes {
   SessionAdd = "SESSION_ADD",
   SessionSetActive = "SESSION_SET_ACTIVE",
   SessionAddData = "SESSION_ADD_DATA",
-  SessionPtyData = "SESSION_PTY_DATA"
+  SessionPtyData = "SESSION_PTY_DATA",
+  UiCommandExec = "UI_COMMAND_EXEC"
 }
 
 export enum ActionTypes {
@@ -19,8 +20,9 @@ export enum ActionTypes {
   SetSuggestions = "SET_SUGGESTIONS",
 
   // New Prompt
-  LastLineChange = "LAST_LINE_CHANGE",
-  SetCurrentInput = "SET_CURRENT_INPUT"
+  UiChange = "UI_CHANGE",
+  CommandSplit = "COMMAND_SPLIT",
+  UpdateCommand = "UPDATE_COMMAND"
 }
 
 /** ACTION TYPES */
@@ -59,14 +61,27 @@ export interface SetSuggestionsAction {
   payload: { uid: string; suggestions: Suggestion[] };
 }
 
-export interface LastLineChangeAction {
-  type: ActionTypes.LastLineChange;
-  payload: { uid: string; line: string | null };
+export interface CommandSplitAction {
+  type: ActionTypes.CommandSplit;
+  payload: { uid: string };
 }
 
-export interface SetCurrentInputAction {
-  type: ActionTypes.SetCurrentInput;
-  payload: { uid: string; input: string };
+export interface UiChangeAction {
+  type: ActionTypes.UiChange;
+  payload: {
+    uid: string;
+    inputLine?: number;
+    currentLine?: string | null;
+    scrollPosition?: number;
+    cursorPosition?: CursorPosition;
+  };
+}
+
+export interface UpdateCommandAction {
+  type: ActionTypes.UpdateCommand;
+  payload: {
+    uid: string;
+  };
 }
 
 export type HyperActions =
@@ -76,7 +91,11 @@ export type HyperActions =
   | { type: HyperActionTypes.SessionAdd; pid: string }
   | { type: HyperActionTypes.SessionAddData; pid: string; data: string }
   | { type: HyperActionTypes.SessionPtyData; pid: string; data: string }
-  | { type: HyperActionTypes.SessionSetActive; uid: string };
+  | { type: HyperActionTypes.SessionSetActive; uid: string }
+  | {
+      type: HyperActionTypes.UiCommandExec;
+      command: "editor:deletePreviousWord" | "editor:deleteBeginningLine";
+    };
 
 export type Actions =
   | HyperActions
@@ -86,8 +105,9 @@ export type Actions =
   | StopInputAction
   | SetCwdAction
   | SetSuggestionsAction
-  | LastLineChangeAction
-  | SetCurrentInputAction;
+  | UiChangeAction
+  | CommandSplitAction
+  | UpdateCommandAction;
 
 /** ACTION CREATORS */
 
@@ -128,18 +148,19 @@ export const stopInputAction = (uid: string): StopInputAction => ({
   payload: { uid }
 });
 
-export const lastLineChange = (
-  uid: string,
-  line: string | null
-): LastLineChangeAction => ({
-  type: ActionTypes.LastLineChange,
-  payload: { uid, line }
+export const uiChangeAction = (
+  payload: UiChangeAction["payload"]
+): UiChangeAction => ({
+  type: ActionTypes.UiChange,
+  payload
 });
 
-export const setCurrentInput = (
-  uid: string,
-  input: string
-): SetCurrentInputAction => ({
-  type: ActionTypes.SetCurrentInput,
-  payload: { uid, input }
+export const commandSplitAction = (uid: string): CommandSplitAction => ({
+  type: ActionTypes.CommandSplit,
+  payload: { uid }
+});
+
+export const updateCommandAction = (uid: string): UpdateCommandAction => ({
+  type: ActionTypes.UpdateCommand,
+  payload: { uid }
 });
