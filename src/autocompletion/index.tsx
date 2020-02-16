@@ -12,8 +12,9 @@ const fuse = new Fuse([] as Suggestion[], {
 });
 
 function dedupeSuggestions(suggestions: Suggestion[]) {
-  return suggestions.filter((obj, pos, arr) => {
-    return arr.map(mapObj => mapObj["label"]).indexOf(obj["label"]) === pos;
+  const labels = suggestions.map(mapObj => mapObj["label"]);
+  return suggestions.filter((obj, i) => {
+    return labels.indexOf(obj["label"]) === i;
   });
 }
 

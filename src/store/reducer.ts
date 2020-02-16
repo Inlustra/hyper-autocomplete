@@ -9,9 +9,12 @@ import {
   removeCharAction,
   addCharAction,
   commandSplitAction,
-  updateCommandAction
+  updateCommandAction,
+  deleteLineAction,
+  deleteWordAction
 } from "./actions";
 import { setCwd, updateSuggestions } from "./effects";
+import { deleteCharAt, deleteWordAt } from "../common/string";
 /** INIT STATE */
 
 const initState: Autocomplete = {
@@ -61,18 +64,33 @@ export const reduceSessions = (
     case ActionTypes.ResetInput:
       return state.setIn(["autocomplete", "sessions", action.payload.uid], {
         ...getSessionByUid(state, action.payload.uid),
-        splitPositions: [],
         currentUserInput: "",
-        arguments: [],
-        command: undefined,
         stopped: false
       });
+
+    case ActionTypes.DeleteWord: {
+      const session = getSessionByUid(state, action.payload.uid);
+      return state.setIn(["autocomplete", "sessions", action.payload.uid], {
+        ...session,
+        currentUserInput: deleteWordAt(
+          session.currentUserInput,
+          session.column
+        ),
+        stopped: false
+      });
+    }
+    case ActionTypes.DeleteLine: {
+      const session = getSessionByUid(state, action.payload.uid);
+      return state.setIn(["autocomplete", "sessions", action.payload.uid], {
+        ...session,
+        currentUserInput: session.currentUserInput.slice(session.splitPosition),
+        stopped: false
+      });
+    }
     case ActionTypes.StopInput:
       return state.setIn(["autocomplete", "sessions", action.payload.uid], {
         ...getSessionByUid(state, action.payload.uid),
         currentUserInput: "",
-        arguments: [],
-        command: undefined,
         stopped: true
       });
 
@@ -123,20 +141,20 @@ export const reduceSessions = (
         ? state
         : state.setIn(["autocomplete", "sessions", action.payload.uid], {
             ...session,
-            currentUserInput
+            currentUserInput,
+            column: session.column + action.payload.event.key.length
           });
     }
     case ActionTypes.RemoveChar: {
       const session = getSessionByUid(state, action.payload.uid);
-      const currentUserInput =
-        session.currentUserInput.length !== session.splitPosition
-          ? session.currentUserInput.slice(0, -1)
-          : session.currentUserInput;
       return session.stopped
         ? state
         : state.setIn(["autocomplete", "sessions", action.payload.uid], {
             ...session,
-            currentUserInput
+            currentUserInput: deleteCharAt(
+              session.currentUserInput,
+              session.column
+            )
           });
     }
     case ActionTypes.UpdateCommand: {
@@ -161,7 +179,9 @@ export const reduceSessions = (
         session.splitPosition
       );
       const lineStartIndex = session.currentLine.indexOf(currentUserInputLine);
+      console.log(lineStartIndex);
       if (!lineStartIndex) {
+        // Something messed up, our currentUserInput is not equal to the current line
         return state.setIn(
           ["autocomplete", "sessions", action.payload.uid],
           merged
@@ -172,6 +192,11 @@ export const reduceSessions = (
         session.cursorPosition.col -
         currentPrompt.length +
         session.splitPosition;
+      console.log(
+        session.cursorPosition.col,
+        currentPrompt,
+        currentUserInputColumn
+      );
       const fullCommandRunningTotal = fullCommand.reduce<number[]>(
         (prev, curr, i) => [
           ...prev,
@@ -209,6 +234,7 @@ export const middleware = (store: any) => (
   switch (action.type) {
     case HyperActionTypes.SessionUserData: {
       const event = window.event as KeyboardEvent | undefined;
+      console.log(event);
       if (!event) {
         break;
       }
@@ -272,12 +298,25 @@ export const middleware = (store: any) => (
         setCwd(store.dispatch, activeUid, pid);
       }
       break;
+    case HyperActionTypes.UiCommandExec:
+      switch (action.command) {
+        case "editor:break":
+          store.dispatch(resetInputAction(activeUid));
+          break;
+        case "editor:deleteBeginningLine":
+          store.dispatch(deleteLineAction(activeUid));
+          break;
+        case "editor:deletePreviousWord":
+          store.dispatch(deleteWordAction(activeUid));
+          break;
+        default:
+          console.warn(`Unhandled UICommandExec: ${action.command}`);
+      }
+      break;
 
     /**
      * Update Autocomplete Suggestions
      */
-    case ActionTypes.AddChar:
-    case ActionTypes.RemoveChar:
     case ActionTypes.ResetInput:
     case ActionTypes.StopInput:
     case ActionTypes.SetCwd:
@@ -287,9 +326,6 @@ export const middleware = (store: any) => (
       break;
 
     case ActionTypes.UpdateCommand:
-      console.warn(
-        getSessionByUid(state.sessions, action.payload.uid).argumentList
-      );
       updateSuggestions(
         store.dispatch,
         action.payload.uid,

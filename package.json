@@ -10,9 +10,9 @@
   ],
   "scripts": {
     "start": "babel src --out-dir dist --extensions \".ts,.tsx\" --watch",
-    "build": "tsc --emitDeclarationOnly && babel src --out-dir dist --extensions \".ts,.tsx\"",
-    "build-prod": "babel src --out-dir dist",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "webpack --watch --progress --mode=development",
+    "build-prod": "webpack",
+    "test": "jest --watch"
   },
   "author": "",
   "license": "ISC",
@@ -24,26 +24,35 @@
     "fuse.js": "^3.4.6",
     "klaw": "^3.0.0",
     "react": "^16.12.0",
-    "strip-ansi": "^6.0.0"
+    "strip-ansi": "^6.0.0",
+    "vscode-icons": "ssh://git@github.com:vscode-icons/vscode-icons.git#9.7.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0-rc.2",
-    "@babel/core": "^7.0.0-rc.2",
+    "@babel/core": "^7.8.4",
     "@babel/plugin-proposal-class-properties": "^7.0.0-rc.2",
     "@babel/plugin-proposal-object-rest-spread": "^7.0.0-rc.2",
-    "@babel/preset-env": "^7.0.0-rc.2",
+    "@babel/preset-env": "^7.8.4",
     "@babel/preset-react": "^7.0.0-rc.2",
     "@babel/preset-typescript": "^7.0.0-rc.2",
+    "@svgr/webpack": "^5.1.0",
     "@types/fs-extra": "^8.0.1",
+    "@types/jest": "^25.1.2",
     "@types/klaw": "^3.0.0",
     "@types/node": "^13.5.3",
     "@types/react": "^16.4.11",
     "babel-eslint": "^10.0.3",
+    "babel-jest": "^25.1.0",
+    "babel-loader": "^8.0.6",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-react": "^7.11.1",
+    "jest": "^25.1.0",
     "prettier": "^1.14.2",
-    "typescript": "^3.0.1"
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.0.1",
+    "webpack": "^4.41.6",
+    "webpack-cli": "^3.3.11"
   }
 }

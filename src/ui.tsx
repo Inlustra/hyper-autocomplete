@@ -9,6 +9,10 @@ interface UIProps {
   context: AutocompleteContext;
   padding: number;
   backgroundColor: string;
+  fontSize: number;
+  fontFamily: string;
+  uiFontFamily: string;
+  foregroundColor: string;
 }
 
 interface State {
@@ -113,6 +117,39 @@ export const decorateTerm = (Term: any, something: any) => {
       return term?.buffer.cursorX;
     }
 
+    mergeConfig(): HyperAutocompleteConfig {
+      const { hyperAutocomplete } = window.config.getConfig();
+      return {
+        backgroundColor:
+          hyperAutocomplete?.backgroundColor ?? this.props.backgroundColor,
+        label: {
+          color: hyperAutocomplete?.label?.color ?? this.props.foregroundColor,
+          fontFamily:
+            hyperAutocomplete?.label?.fontFamily ?? this.props.fontFamily,
+          fontSize: hyperAutocomplete?.label?.fontSize ?? this.props.fontSize
+        },
+        description: {
+          backgroundColor:
+            hyperAutocomplete?.description?.backgroundColor ??
+            this.props.backgroundColor,
+          color:
+            hyperAutocomplete?.description?.color ?? this.props.foregroundColor,
+          fontFamily:
+            hyperAutocomplete?.description?.fontFamily ?? this.props.fontFamily,
+          fontSize:
+            hyperAutocomplete?.description?.fontSize ?? this.props.fontSize
+        },
+        detail: {
+          color: hyperAutocomplete?.detail?.color ?? this.props.foregroundColor,
+          fontFamily:
+            hyperAutocomplete?.detail?.fontFamily ?? this.props.fontFamily,
+          fontSize:
+            hyperAutocomplete?.detail?.fontSize ??
+            Math.max(this.props.fontSize - 2, 6)
+        }
+      };
+    }
+
     render() {
       return (
         <div
@@ -128,7 +165,7 @@ export const decorateTerm = (Term: any, something: any) => {
             onResize={() => this.resizeAutocompleteWindow()}
           />
           <AutocompleteWindow
-            backgroundColor={this.props.backgroundColor}
+            config={this.mergeConfig()}
             padding={this.props.padding}
             suggestions={this.props.context.suggestions}
             terminalWidth={this.state.width}

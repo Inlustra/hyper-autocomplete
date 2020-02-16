@@ -6,7 +6,8 @@ export enum HyperActionTypes {
   SessionSetActive = "SESSION_SET_ACTIVE",
   SessionAddData = "SESSION_ADD_DATA",
   SessionPtyData = "SESSION_PTY_DATA",
-  UiCommandExec = "UI_COMMAND_EXEC"
+  UiCommandExec = "UI_COMMAND_EXEC",
+  UiFontSizeSet = "UI_FONT_SIZE_SET"
 }
 
 export enum ActionTypes {
@@ -15,6 +16,8 @@ export enum ActionTypes {
   // Legacy Prompt
   AddChar = "ADD_CHAR",
   RemoveChar = "REMOVE_CHAR",
+  DeleteWord = "DELETE_WORD",
+  DeleteLine = "DELETE_LINE",
   ResetInput = "RESET_INPUT",
   StopInput = "STOP_INPUT",
   SetSuggestions = "SET_SUGGESTIONS",
@@ -43,6 +46,16 @@ export interface AddCharAction {
 
 export interface RemoveCharAction {
   type: ActionTypes.RemoveChar;
+  payload: { uid: string };
+}
+
+export interface DeleteWordAction {
+  type: ActionTypes.DeleteWord;
+  payload: { uid: string };
+}
+
+export interface DeleteLineAction {
+  type: ActionTypes.DeleteLine;
   payload: { uid: string };
 }
 
@@ -92,14 +105,20 @@ export type HyperActions =
   | { type: HyperActionTypes.SessionAddData; pid: string; data: string }
   | { type: HyperActionTypes.SessionPtyData; pid: string; data: string }
   | { type: HyperActionTypes.SessionSetActive; uid: string }
+  | { type: HyperActionTypes.UiFontSizeSet }
   | {
       type: HyperActionTypes.UiCommandExec;
-      command: "editor:deletePreviousWord" | "editor:deleteBeginningLine";
+      command:
+        | "editor:deletePreviousWord"
+        | "editor:deleteBeginningLine"
+        | "editor:break";
     };
 
 export type Actions =
   | HyperActions
   | AddCharAction
+  | DeleteLineAction
+  | DeleteWordAction
   | RemoveCharAction
   | ResetInputAction
   | StopInputAction
@@ -140,6 +159,16 @@ export const removeCharAction = (uid: string): RemoveCharAction => ({
 
 export const resetInputAction = (uid: string): ResetInputAction => ({
   type: ActionTypes.ResetInput,
+  payload: { uid }
+});
+
+export const deleteWordAction = (uid: string): DeleteWordAction => ({
+  type: ActionTypes.DeleteWord,
+  payload: { uid }
+});
+
+export const deleteLineAction = (uid: string): DeleteLineAction => ({
+  type: ActionTypes.DeleteLine,
   payload: { uid }
 });
 

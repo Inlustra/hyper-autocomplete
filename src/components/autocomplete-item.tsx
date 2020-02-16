@@ -1,33 +1,83 @@
 import React from "react";
+import { ui } from "../common/ui";
 
 interface AutocompleteItemProps {
+  onClick?: () => void;
+  config: HyperAutocompleteConfig;
   suggestion: Suggestion;
 }
 
+interface AutocompleteItemState {
+  icon?: React.StatelessComponent | undefined;
+}
+
 export class AutocompleteItemComponent extends React.PureComponent<
-  AutocompleteItemProps
+  AutocompleteItemProps,
+  AutocompleteItemState
 > {
+  state: AutocompleteItemState = {};
   public static ITEM_HEIGHT_PX = 30;
+
+  constructor(props: AutocompleteItemProps) {
+    super(props);
+    this.state = {
+      icon: undefined
+    };
+
+    this.updateIcon = this.updateIcon.bind(this);
+    this.getIcon = this.getIcon.bind(this);
+    this.updateIcon(props.suggestion);
+  }
+
+  componentDidUpdate(prevSugg: AutocompleteItemProps) {
+    const { label } = this.props.suggestion;
+    if (prevSugg.suggestion.label !== label) {
+      this.updateIcon(this.props.suggestion);
+    }
+  }
+
+  updateIcon = (suggestion: Suggestion) => {
+    this.getIcon(suggestion).then(icon => {
+      this.setState({ icon });
+    });
+  };
+
+  async getIcon({ label, kind }: Suggestion) {
+    return await ((kind === "Directory" &&
+      ui.getIconForFolder(label, "dark")) ||
+      (kind === "File" && ui.getIconForFile(label, "dark")) ||
+      undefined);
+  }
 
   render() {
     return (
       <div
+        onClick={this.props.onClick}
         style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
           padding: "5px",
           lineHeight: AutocompleteItemComponent.ITEM_HEIGHT_PX + "px",
-          height: AutocompleteItemComponent.ITEM_HEIGHT_PX + "px",
+          minHeight: AutocompleteItemComponent.ITEM_HEIGHT_PX + "px",
           whiteSpace: "nowrap",
           textOverflow: "hidden"
         }}
       >
-        {this.props.suggestion.highlightLabel || this.props.suggestion.label}
+        {this.state.icon}
+        <div style={{ marginRight: 10 }}>
+          <span style={{ ...this.props.config.label }}>
+            {this.props.suggestion.highlightLabel ||
+              this.props.suggestion.label}
+          </span>
+        </div>
         {this.props.suggestion.detail && (
           <span
             style={{
-              fontWeight: "lighter"
+              ...this.props.config.detail
             }}
           >
-            - {this.props.suggestion.detail}
+            {this.props.suggestion.detail}
           </span>
         )}
       </div>

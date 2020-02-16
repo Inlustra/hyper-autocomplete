@@ -3,6 +3,6 @@ interface Window {
     dispatch: (action: any) => void;
   };
   config: {
-    getConfig: () => any;
+    getConfig: () => HyperConfig;
   };
 }

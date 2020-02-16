@@ -1,19 +1,18 @@
-import React from 'react';
-import { AutocompleteItemComponent } from './autocomplete-item';
+import React from "react";
+import { AutocompleteItemComponent } from "./autocomplete-item";
 
 interface AutocompleteWindowProps {
-  padding: number;
+  config: HyperAutocompleteConfig;
   suggestions: Suggestion[];
-  backgroundColor: string;
   terminalHeight: number;
   terminalWidth: number;
   position: CursorPosition;
+  padding: number;
 }
 
 export class AutocompleteWindow extends React.PureComponent<
   AutocompleteWindowProps
 > {
-
   private static MAX_HEIGHT_PX = 150;
 
   constructor(props: AutocompleteWindowProps) {
@@ -26,7 +25,7 @@ export class AutocompleteWindow extends React.PureComponent<
     ) : (
       <div
         style={{
-          position: 'absolute',
+          position: "absolute",
           padding: this.props.padding,
           zIndex: 4,
           ...this.calcPosition()
@@ -34,21 +33,23 @@ export class AutocompleteWindow extends React.PureComponent<
       >
         <div
           style={{
-            maxHeight: AutocompleteWindow.MAX_HEIGHT_PX + 'px',
-            color: 'white',
-            width: '400px',
-            border: '1px solid white',
-            display: 'flex',
-            overflowX: 'hidden',
-            overflowY: 'scroll',
-            backgroundColor: this.props.backgroundColor,
+            maxHeight: AutocompleteWindow.MAX_HEIGHT_PX + "px",
+            color: "white",
+            display: "flex",
+            overflowX: "hidden",
+            overflowY: "scroll",
+            backgroundColor: this.props.config.backgroundColor,
             boxShadow:
-              '0 4px 8px 0 rgba(0,0,0,0.12), 0 2px 4px 0 rgba(0,0,0,0.08)',
-            flexDirection: this.shouldInvert() ? 'column-reverse' : 'column'
+              "rgba(0, 0, 0, 0.12) 0px 0px 10px 3px, rgba(0, 0, 0, 0.08) 1px 4px 5px 2px",
+            flexDirection: this.shouldInvert() ? "column-reverse" : "column"
           }}
         >
           {this.props.suggestions.map(item => (
-            <AutocompleteItemComponent suggestion={item} />
+            <AutocompleteItemComponent
+              key={item.label}
+              config={this.props.config}
+              suggestion={item}
+            />
           ))}
         </div>
       </div>

@@ -1,4 +1,1 @@
-export const getConfig = (): HyperAutocompleteConfig =>
-  window.config?.getConfig().hyperAutocomplete ?? {};
-
-export const getPrompt = () => getConfig().prompt;
+export const getConfig = (): HyperConfig => window.config.getConfig();
