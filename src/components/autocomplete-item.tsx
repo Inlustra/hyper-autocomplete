@@ -65,9 +65,9 @@ export class AutocompleteItemComponent extends React.PureComponent<
           textOverflow: "hidden"
         }}
       >
-        <div style={{ marginRight: 10 }}>
-          {Icon && <Icon style={{ width: 15, height: 15 }} />}
-          <span style={{ ...this.props.config.label }}>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          {Icon && <Icon style={{ marginRight: 10, width: 15, height: 15 }} />}
+          <span style={{ ...this.props.config.label, marginRight: 10 }}>
             {this.props.suggestion.highlightLabel ||
               this.props.suggestion.label}
           </span>
