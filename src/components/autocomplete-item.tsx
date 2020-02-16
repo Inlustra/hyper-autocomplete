@@ -8,7 +8,7 @@ interface AutocompleteItemProps {
 }
 
 interface AutocompleteItemState {
-  icon?: React.StatelessComponent | undefined;
+  icon?: IconComponent | undefined;
 }
 
 export class AutocompleteItemComponent extends React.PureComponent<
@@ -50,6 +50,7 @@ export class AutocompleteItemComponent extends React.PureComponent<
   }
 
   render() {
+    const Icon = this.state.icon;
     return (
       <div
         onClick={this.props.onClick}
@@ -64,8 +65,8 @@ export class AutocompleteItemComponent extends React.PureComponent<
           textOverflow: "hidden"
         }}
       >
-        {this.state.icon}
         <div style={{ marginRight: 10 }}>
+          {Icon && <Icon style={{ width: 15, height: 15 }} />}
           <span style={{ ...this.props.config.label }}>
             {this.props.suggestion.highlightLabel ||
               this.props.suggestion.label}

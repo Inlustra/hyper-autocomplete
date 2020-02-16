@@ -3,8 +3,8 @@ import { fileIcons } from "../icons-manifest/file-icons";
 import { folderIcons } from "../icons-manifest/folder-icons";
 import Fuse from "fuse.js";
 import { reverse } from "./string";
-import { ReactComponent as DefaultFile } from "../icons/default_file.svg";
-import { ReactComponent as DefaultFolder } from "../icons/default_folder.svg";
+import DefaultFile from "../icons/default_file.svg";
+import DefaultFolder from "../icons/default_folder.svg";
 
 const filesDictionary = fileIcons.reduce<{ [key: string]: Icon }>(
   (prev, curr) => {
@@ -75,13 +75,13 @@ export const ui = {
         type === "dark" ? fileMatch?.dark : fileMatch?.light ?? fileMatch?.dark;
       if (iconName) {
         const icon = await import(`../icons/${iconName}`);
-        return icon.ReactComponent as React.StatelessComponent<
+        return icon.default as React.StatelessComponent<
           React.SVGAttributes<SVGElement>
         >;
       }
     } catch (e) {
       console.error(e);
-    }
+    }console.log(DefaultFile);
     return DefaultFile;
   },
   getIconForFolder: async (file: string, type: "light" | "dark") => {
@@ -95,7 +95,7 @@ export const ui = {
           : folderMatch?.light ?? folderMatch?.dark;
       if (iconName) {
         const icon = await import(`../icons/${iconName}`);
-        return icon.ReactComponent as React.StatelessComponent<
+        return icon.default as React.StatelessComponent<
           React.SVGAttributes<SVGElement>
         >;
       }

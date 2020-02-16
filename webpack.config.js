@@ -24,18 +24,19 @@ module.exports = {
   devtool: false,
   output: {
     filename: "index.js",
-    chunkFilename: "[id].bundle.js",
     path: path.resolve(__dirname, "dist"),
     libraryTarget: "commonjs"
   },
   optimization: {
     splitChunks: {
-      // include all types of chunks
       chunks: "async",
       cacheGroups: {
+        defaultVendors: {
+          filename: "vendors.[chunkhash].js",
+        },
         icons: {
           test: /[\\/]icons[\\/]/,
-          name: "icons",
+          filename: "icons.[chunkhash].js",
           chunks: "all"
         }
       }
